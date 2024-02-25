@@ -87,6 +87,12 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         resultTextView.font = UIFont.systemFont(ofSize: 16)
         resultTextView.isEditable = false
         bgView.addSubview(resultTextView)
+        resultTextView2 = UITextView(frame: CGRect(x: 10, y: 130, width: 120, height: 140))
+        resultTextView2.backgroundColor = .clear
+        resultTextView2.textColor = .white
+        resultTextView2.font = UIFont.systemFont(ofSize: 16)
+        resultTextView2.isEditable = false
+        bgView.addSubview(resultTextView2)
         referenceButton.setTitle("Set Reference", for: .normal)
         referenceButton.backgroundColor = .blue  // Set the background color as needed
         referenceButton.setTitleColor(.white, for: .normal)
@@ -152,9 +158,17 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
                 print(centerShoulder)
                 print(rightShoulder)
                 print(spine)
-
-
-                var angleVector: simd_float3 = simd_float3()
+                
+                let leftPosition = leftShoulder.localPosition
+                let rightPosition = rightShoulder.localPosition
+                if leftPosition.columns.3[2]-rightPosition.columns.3[2]>0.2{
+                    self.resultTextView2.text = "leaning left"
+                }
+                else if leftPosition.columns.3[2]-rightPosition.columns.3[2] < -0.2{
+                    self.resultTextView2.text = "leaning right "
+                }
+                
+                
 
 
                 // Get the position relative to the parent shoulder joint.
@@ -176,9 +190,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
                 let roll = atan2((translationChild.y), (translationChild.x))
 
 
-                // The angle between the elbow and shoulder joint.
-                angleVector = simd_float3(pitch, yaw, roll)
-                print(yaw,referenceYaw)
+        
                 self.currentYaw = yaw
                 var yawDifference : Float?
                 if let referenceYaw = self.referenceYaw {
@@ -190,7 +202,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
                         if yawDifference! > 0.2 {
                             DispatchQueue.main.async {
                                 self.resultTextView.text = "leaning forward"
-                                print("leaningb forward",yawDifference!,self.currentYaw!,referenceYaw)
+                                print("leaning forward",yawDifference!,self.currentYaw!,referenceYaw)
                             }
                         }
                     }
